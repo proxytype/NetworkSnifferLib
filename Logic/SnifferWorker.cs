@@ -20,12 +20,12 @@ namespace NetworkSnifferLib.Logic
         private byte[] buffer;
         private IPAddress ip;
         private Socket socket;
-        private SnifferSettings settings;
 
-        public SnifferWorker(SnifferSettings _settings)
+        private bool exportPacketData { get; set; }
+
+        public SnifferWorker(bool _exportPacketData)
         {
-            settings = _settings;
-
+            exportPacketData = _exportPacketData;
             buffer = new byte[BUFFER_MAX];
         }
 
@@ -46,7 +46,6 @@ namespace NetworkSnifferLib.Logic
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
 
@@ -72,7 +71,7 @@ namespace NetworkSnifferLib.Logic
                     {
                         byte[] raw = new byte[received];
                         Array.Copy(buffer, 0, raw, 0, received);
-                        NewPacket(new SnifferPacket(raw));
+                        NewPacket(new SnifferPacket(raw, exportPacketData));
                     }
                 }
                 catch { } // invalid packet; ignore

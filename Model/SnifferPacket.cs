@@ -52,14 +52,16 @@ namespace NetworkSnifferLib.Model
             Other = -1
         }
 
+        private const int PAYLOAD_START_INDEX = 31;
+        private const int SOURCE_IP_START_INDEX = 12;
+        private const int DESTINATION_IP_START_INDEX = 16;
         private const int RAW_WIDTH_BYTES = 8 * 32;
-
         private const int MIN_PACKET_SIZE = 20;
         private const int MIN_HEADER_SIZE = 5;
         private const int SHIFT_4 = 4;
         private const int AND_VERSION = 240; //0xF0
         private const int AND_HEADER_LENGTH = 15; //0xF
-        private const int AND_PRECEDENCE = 224;
+        private const int AND_PRECEDENCE = 224; //0xE0
         private const int AND_DELAY = 16; //0x10
         private const int AND_THROUGHPUT = 8;
         private const int AND_RELIABLITIY = 4;
@@ -68,12 +70,11 @@ namespace NetworkSnifferLib.Model
         private const int RAW_CHECKSUM_INDEX_1 = 10;
         private const int RAW_PRTOCOL = 9;
 
-
         private const int SHIFT_PRECEDENCE = 5;
         private const int SHIFT_DELAY = 4;
         private const int SHIFT_THROUGHPUT = 3;
         private const int SHIFT_RELIABILITY = 2;
-
+        private bool setPayload { get; set; } = false;
 
         public DateTime time { get; set; }
         public int version { get; set; }
@@ -91,9 +92,12 @@ namespace NetworkSnifferLib.Model
         public IPAddress destinationAddress { get; set; }
         public int sourcePort { get; set; }
         public int destinationPort { get; set; }
+        public string payload { get; set; }
+       
 
-        public SnifferPacket(byte[] _raw)
+        public SnifferPacket(byte[] _raw, bool _setPayload)
         {
+            setPayload = _setPayload;
             parseRow(_raw);
         }
 
@@ -109,7 +113,7 @@ namespace NetworkSnifferLib.Model
             headerLength = (raw[0] & AND_HEADER_LENGTH) * SHIFT_4;
             if(headerLength < MIN_HEADER_SIZE)
             {
-                throw new ArgumentException("Invalid Header Size");
+                throw new InvalidOperationException("Invalid Header Size");
             }
 
             precedence = (TYPE_OF_SERVICE_PRECENDENCE)((raw[1] & AND_PRECEDENCE) >> SHIFT_PRECEDENCE);
@@ -119,7 +123,7 @@ namespace NetworkSnifferLib.Model
             totalLength = raw[2] * RAW_WIDTH_BYTES + raw[3];
 
             if (totalLength != raw.Length) {
-                throw new ArgumentException("Invalid Packet Length!");
+                throw new InvalidOperationException("Invalid Packet Length!");
             }
 
             identification = raw[4] * RAW_WIDTH_BYTES + raw[5];
@@ -138,8 +142,8 @@ namespace NetworkSnifferLib.Model
             checksum[0] = raw[RAW_CHECKSUM_INDEX_0];
             checksum[1] = raw[RAW_CHECKSUM_INDEX_1];
 
-            sourceAddress = new IPAddress(BitConverter.ToUInt32(raw, 12));
-            destinationAddress = new IPAddress(BitConverter.ToUInt32(raw, 16));
+            sourceAddress = new IPAddress(BitConverter.ToUInt32(raw, SOURCE_IP_START_INDEX));
+            destinationAddress = new IPAddress(BitConverter.ToUInt32(raw, DESTINATION_IP_START_INDEX));
 
             if (protocol == NETWORK_PROTOCOL.Tcp || protocol == NETWORK_PROTOCOL.Udp)
             {
@@ -150,6 +154,19 @@ namespace NetworkSnifferLib.Model
             {
                 sourcePort = -1;
                 destinationPort = -1;
+            }
+
+            if (setPayload) {
+                StringBuilder sb = new StringBuilder(raw.Length);
+                for (int i = 0; i < raw.Length; i++)
+                {
+                    if (raw[i] > PAYLOAD_START_INDEX)
+                        sb.Append((char)raw[i]);
+                    else
+                        sb.Append(".");
+                }
+
+                payload = sb.ToString();
             }
 
         }
