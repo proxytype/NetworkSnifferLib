@@ -1,7 +1,7 @@
 # NetworkSnifferLib
 Simple Network Sniffer for detetcing packages from all local network interfaces c#.
 
-**it's must to run under administrator privilege**
+**must run under administrator privilege**
 
 Usage:
 ```C#
@@ -16,7 +16,7 @@ for (int i = 0; i < workers.Length; i++)
  workers[i] = new SnifferWorker(true);
  //sign to report event
  workers[i].NewPacket += Worker_NewPacket;
- workers[i].start(hosts[1]);
+ workers[i].start(hosts[i]);
 }
 
 //dont kill the application
