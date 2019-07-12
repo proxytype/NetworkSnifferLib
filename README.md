@@ -1,7 +1,7 @@
 # NetworkSnifferLib
 Simple Network Sniffer for detetcing packages from all local network interfaces c#.
 
-**must run under administrator privilege**
+**Must run under administrator privilege**
 
 Usage:
 ```C#
