@@ -1,26 +1,36 @@
-# NetworkSnifferLib
-Simple Network Sniffer for detetcing packages from all local network interfaces c#.
+# Sniffer
+An Sniffer of packages
 
-**Must run under administrator privilege**
+This application was based on the lib [NetworkSnifferLib]: https://github.com/TheLe0/NetworkSnifferLib .With this, you can sniff some IP on your machine(only v4 implemented until now), for a estimated time, and get a little of information about it.
 
-Usage:
-```C#
-//get machine local ip's
-IPAddress[] hosts = Dns.Resolve(Dns.GetHostName()).AddressList;
-//create sniffer for each ip
-workers = new SnifferWorker[hosts.Length];
+## IP V4  Protocol Header ##
 
-for (int i = 0; i < workers.Length; i++)
-{
- //flag if export also the packet data
- workers[i] = new SnifferWorker(true);
- //sign to report event
- workers[i].NewPacket += Worker_NewPacket;
- workers[i].start(hosts[i]);
-}
+![IP Header](./images/IpHeader.gif)
 
-//dont kill the application
-while (true) {
- Thread.Sleep(1000);
-}
-```
+## TCP Protocol Header ## 
+
+![TCP Header](./images/tcpHeader.gif)
+
+## UDP Protocol Header ##
+
+![UDP Header](./images/UdpHeader.gif)
+
+## Components Architecture Diagram
+
+![Component Diagram](./images/component_diagram.png)
+
+## Implementation Class Diagram
+
+![Class Diagram](./images/class_diagram.png)
+
+## Information Given ##
+
+* [x] IP Version;
+* [x] An overall of packages sniffed;
+* [x] Total TCP packages sniffed;
+* [x] Lost packages;
+* [x] Information about each package header.
+
+## Configuration ##
+
+You will need to execute the application as a administrator, if you are going to run on VS or VS Code, run the VS as an administrator.
