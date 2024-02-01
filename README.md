@@ -1,5 +1,5 @@
 # NetworkSnifferLib
-Simple Network Sniffer for detetcing packets from all local network interfaces c#.
+Introducing a straightforward Network Sniffer tool developed in C#. This lightweight application is designed to detect and analyze packets across all local network interfaces. Utilizing C# for simplicity and efficiency, this sniffer provides an easy-to-use solution for monitoring network activity on various interfaces. Enhance your network analysis capabilities with this user-friendly tool that allows you to effortlessly track and inspect data packets across your local network.
 
 **Must run under administrator privilege**
 
